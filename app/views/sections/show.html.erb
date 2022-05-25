@@ -1,0 +1,19 @@
+<h1>Section <%= @section.id %></h1>
+<% rm_link = "https://www.rightmove.co.uk/property-to-rent/find.html?locationIdentifier=USERDEFINEDAREA%5E#{CGI.escape(@section.geojson)}" %>
+<div><%= link_to 'Open on rightmove', rm_link %></div>
+<div><%= link_to 'Scan now', scan_section_path(@section), method: :post %></div>
+<% if @section.consider? %>
+    <%= button_to 'Disable', disable_section_path(@section) %>
+<% else %>
+    <%= button_to 'Enable', enable_section_path(@section) %>
+<% end %>
+<%= "Found #{@properties.count} properties" %>
+<ul>
+<% @starred_properties.each do |prop| %>
+    <%= render prop, starred: true %>
+<% end %>
+
+<% @properties.each do |prop| %>
+    <%= render prop %>
+<% end %>
+<%= render 'properties/tinder' %>

@@ -1,0 +1,42 @@
+<li style="margin-bottom: 2em" class='<%= defined?(starred) ? 'pp' : 'property-item' %>' data-id="<%= property.id %>">
+    <h4>
+        £<%= property.rpm %>/month <%= property.bedrooms || 'unk' %> beds <%= property.bathrooms || 'unk' %> baths
+        <% unless defined?(starred) %>
+            <%= link_to 'Kill', kill_property_path(property), data: { remote: true, method: :post }, class: 'kill-prop' %>
+            <%= link_to 'Star', star_property_path(property), data: { remote: true, method: :post }, class: 'star-prop' %>
+        <% end %>
+    </h4>
+    <%= link_to 'Open on RM', property.url, rel: 'noopener noreferrer', target: '_blank' %>
+    <div>Address: <%= property.address %></div>
+    <div style="display: flex; height: 300px; width: 100%; overflow-x: auto">
+        <div id="map-<%= property.id %>" style="min-width: 300px; height: 300px; margin-right: 1em"></div>
+        <% property.images.split.each do |i| %>
+            <%= image_tag i, style: 'margin-right: 1em' %>
+        <% end %>
+    </div>
+    <% if property.garden %>
+        <div>Garden!</div>
+    <% end %>
+    <div><b>Agency</b>: <%= property.agency %></div>
+    <div><b>Furnished</b>: <%= property.furnish %></div>
+    <div><b>Available</b>: <%= property.available %></div>
+    <div><b>Nearby</b>: <ul>
+        <% JSON.parse(property.stations).each do |stat| %>
+            <li><%= stat['name'] %> <%= (stat['distance'] * 1.6).round(2) %>km</li>
+        <% end %>
+    </ul></div>
+    <div><b>Key features</b>: <%== property.key_features %></div>
+    <div><b>Description</b>: <%== property.description.gsub(/(<br\s*\/?>\s*)+/, '<br>') %></div>
+    <script>
+  var mymap = L.map('map-<%= property.id %>').setView([<%=property.latitude %>, <%=property.longitude%>], 14);
+  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      maxZoom: 18,
+      id: 'mapbox/streets-v11',
+      tileSize: 512,
+      zoomOffset: -1,
+      accessToken: 'pk.eyJ1IjoiZnJhYm9mZmEiLCJhIjoiY2tub3VhaTRsMTJhbTJubzU3eDI5Y3E3dCJ9.7k_cs2XqjSjKswGVkAyc6A'
+  }).addTo(mymap);
+    L.marker([<%=property.latitude %>, <%=property.longitude%>]).addTo(mymap)
+    </script>
+</li>

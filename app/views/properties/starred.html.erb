@@ -1,0 +1,6 @@
+<%= "Found #{@properties.count} properties" %>
+<ul>
+<% @properties.each do |prop| %>
+    <%= render prop %>
+<% end %>
+<%= render 'properties/tinder' %>

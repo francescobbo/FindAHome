@@ -1,0 +1,6 @@
+<%= "Found #{@properties.count} properties" %>
+<ul>
+<% @paged_properties.limit(100).each do |prop| %>
+    <%= render prop %>
+<% end %>
+<%= render 'properties/tinder' %>

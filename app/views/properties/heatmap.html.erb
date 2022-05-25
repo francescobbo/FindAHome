@@ -1,0 +1,48 @@
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+
+ <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+
+<%= javascript_include_tag 'text' %>
+
+ <div id="mapid" style="height: 1100px; width: 100%"></div>
+
+<script>
+  var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      maxZoom: 18,
+      id: 'mapbox/streets-v11',
+      tileSize: 512,
+      zoomOffset: -1,
+      accessToken: 'pk.eyJ1IjoiZnJhYm9mZmEiLCJhIjoiY2tub3VhaTRsMTJhbTJubzU3eDI5Y3E3dCJ9.7k_cs2XqjSjKswGVkAyc6A'
+  }).addTo(mymap);
+
+  L.tileLayer('http://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
+  {
+    attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>, Style: <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA 2.0</a> <a href="http://www.openrailwaymap.org/">OpenRailwayMap</a> and OpenStreetMap',
+    minZoom: 10,
+    maxZoom: 18,
+    tileSize: 512
+  }).addTo(mymap);
+
+
+  <% @sections.each do |s| %>
+    var polygon = L.polygon(<%= s.data.html_safe %>, {
+      weight: 1,
+      opacity: 0.5,
+      fillOpacity: 0.4,
+      color: '<%= s.consider ? median_color(s.median_price(max_beds: params[:max_beds], max_rpm: params[:max_rpm])) : '#ff00ff' %>'
+    }).bindPopup(" \
+      <a href=\"/sections/<%= s.id %>?max_beds=<%= params[:max_beds] %>&max_rpm=<%=params[:max_rpm]%>\">Open</a><br>£<%= s.median_price(max_beds: params[:max_beds], max_rpm: params[:max_rpm])&.round(2) %> \
+      <% if s.consider? %> \
+        <%== (button_to 'Disable', disable_section_path(s), remote: true).gsub('"', '\"') %> \
+      <% else %> \
+        <%== (button_to 'Enable', enable_section_path(s), remote: true).gsub('"', '\"') %> \
+      <% end %>
+    ").addTo(mymap);
+  <% end %>
+</script>

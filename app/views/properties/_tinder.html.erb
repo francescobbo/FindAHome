@@ -1,0 +1,24 @@
+<script>
+    document.addEventListener('keypress', function(e) {
+        var prop = document.querySelectorAll('.property-item')[0];
+        if (!prop)
+            return;
+
+        var kill = prop.querySelector('.kill-prop')
+        var star = prop.querySelector('.star-prop')
+
+        switch (e.key) {
+            case 'y':
+                star.click();
+                prop.remove()
+                break;
+            case 'n':
+                kill.click();
+                prop.remove()
+                break;
+            case ' ':
+                prop.remove()
+                e.preventDefault()
+        }
+    })
+</script>
